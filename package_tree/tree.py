@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import os
 import pkg_resources
+import six
 import subprocess
 import tempfile
-import six
 
 
 class inf_loop(list):
@@ -35,9 +36,27 @@ class Style(dict):
         return ', '.join('%s="%s"' % x for x in self.items())
 
 
+def get_site_package(path):
+    folders = []
+    while True:
+        path, folder = os.path.split(path)
+        if folder != "":
+            folders.append(folder)
+        else:
+            break
+    folders.reverse()
+    try:
+        idx = folders.index('site-packages')
+        folders = folders[0:idx]
+    except ValueError:
+        pass
+    return '/' + '/'.join(folders)
+
+
 def format_label(pkg):
     lines = [pkg.key]
-    lines.append('<font point-size="10">%s</font>' % pkg.location)
+    lines.append('<font point-size="10">%s</font>'
+                 % get_site_package(pkg.location))
     lines.append('<font point-size="10">%s</font>' % pkg.version)
     return '<br/>'.join(lines)
 
@@ -61,10 +80,11 @@ def get_graph():
     styles = {}
 
     for pkg in sorted(pkgs, key=lambda x: x.key):
-        if pkg.location not in styles:
-            styles[pkg.location] = Style()
+        site_package = get_site_package(pkg.location)
+        if site_package not in styles:
+            styles[site_package] = Style()
         result.append('"%s" [%s, label=<%s>]' % (
-            pkg.key, styles[pkg.location], format_label(pkg))
+            pkg.key, styles[site_package], format_label(pkg))
         )
     for relation in sorted(deps):
         result.append('"%s" -> "%s";' % relation)
