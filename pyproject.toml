@@ -7,7 +7,7 @@ name = "package-tree"
 version = "1.0.0"
 description = "Graph of python package dependencies"
 readme = "README.md"
-requires-python = ">=3.5"
+requires-python = ">=3.8"
 authors = [
     { name="Votre Nom", email="votre.email@example.com" }
 ]
@@ -17,7 +17,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-dependencies = ["six"]
+dependencies = ["packaging"]
 
 [project.scripts]
 package-tree = "package_tree.tree:main"
